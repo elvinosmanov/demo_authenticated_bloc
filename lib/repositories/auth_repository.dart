@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_user;
+import 'package:max_flutter_authentication/core/extensions/to_user_extension.dart';
 import 'package:max_flutter_authentication/model/user.dart';
 
 class AuthRepository {
@@ -25,18 +26,14 @@ class AuthRepository {
   Future<void> logInWithEmailAndPassword({required String email, required String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-    } catch (_) {}
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> logOut() async {
     try {
       await Future.wait([_firebaseAuth.signOut()]);
     } catch (_) {}
-  }
-}
-
-extension on firebase_user.User {
-  User get toUser {
-    return User(id: uid, name: displayName, email: email, photo: photoURL);
   }
 }

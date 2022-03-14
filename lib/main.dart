@@ -7,13 +7,16 @@ import 'package:max_flutter_authentication/repositories/auth_repository.dart';
 import 'bloc/app_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'config/bloc_observer.dart';
 import 'config/routes.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final AuthRepository authRepository = AuthRepository();
-  runApp(MyApp(authRepository: authRepository));
+  BlocOverrides.runZoned(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    final AuthRepository authRepository = AuthRepository();
+    runApp(MyApp(authRepository: authRepository));
+  }, blocObserver: AppBlocObserver());
 }
 
 class MyApp extends StatelessWidget {
@@ -41,12 +44,8 @@ class AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
         home: FlowBuilder(
-          state: context.select((AppBloc bloc) => bloc.state.status),
-          onGeneratePages: onGenerateAppViewPages)
-        
-        
-        );
+            state: context.select((AppBloc bloc) => bloc.state.status), onGeneratePages: onGenerateAppViewPages));
   }
 }
